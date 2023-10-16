@@ -65,40 +65,42 @@ function determineDatasource(
   return { skipReason: 'unknown-registry', registryUrls: [hostname] };
 }
 
-function extractDependency(
-  tag: string,
-  repository: string
-): {
-  depName?: string;
-  depType?: string;
-  datasource?: string;
-  packageName?: string;
-  skipReason?: SkipReason;
-  currentValue?: string;
-} {
+function extractDependency(tag: string, repository: string): PackageDependency {
   logger.debug(`Found version ${tag}`);
 
   const urlMatchers = [
     // This splits "http://my.github.com/user/repo" -> "my.github.com" "user/repo
-    regEx('^https?://(?<hostname>[^/]+)/(?<depName>\\S*)'),
+    regEx('^https?://(?<hostname>[^/]+)/(?<packageName>\\S*)'),
     // This splits "git@private.registry.com:user/repo" -> "private.registry.com" "user/repo
-    regEx('^git@(?<hostname>[^:]+):(?<depName>\\S*)'),
+    regEx('^git@(?<hostname>[^:]+):(?<packageName>\\S*)'),
     // This split "git://github.com/pre-commit/pre-commit-hooks" -> "github.com" "pre-commit/pre-commit-hooks"
-    regEx(/^git:\/\/(?<hostname>[^/]+)\/(?<depName>\S*)/),
+    regEx(/^git:\/\/(?<hostname>[^/]+)\/(?<packageName>\S*)/),
   ];
   for (const urlMatcher of urlMatchers) {
     const match = urlMatcher.exec(repository);
     if (match?.groups) {
       const hostname = match.groups.hostname;
-      const depName = match.groups.depName.replace(regEx(/\.git$/i), ''); // TODO 12071
+      const packageName = match.groups.packageName.replace(
+        regEx(/\.git$/i),
+        ''
+      ); // TODO 12071
       const sourceDef = determineDatasource(repository, hostname);
-      return {
-        ...sourceDef,
-        depName,
-        depType: 'repository',
-        packageName: depName,
-        currentValue: tag,
-      };
+      if (is.string(sourceDef.datasource)) {
+        return {
+          datasource: sourceDef.datasource,
+          registryUrls: sourceDef.registryUrls,
+          depType: 'repository',
+          packageName,
+          currentValue: tag,
+        };
+      } else if (sourceDef.skipReason) {
+        return {
+          depType: 'repository',
+          packageName,
+          currentValue: tag,
+          skipReason: sourceDef.skipReason,
+        };
+      }
     }
   }
   logger.info(

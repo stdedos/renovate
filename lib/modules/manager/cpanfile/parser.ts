@@ -13,7 +13,7 @@ interface Ctx {
   phase?: string;
   tempPhase?: string;
 
-  depName?: string;
+  packageName?: string;
   currentValue?: string;
 }
 
@@ -64,7 +64,7 @@ const phasedRequiresMatch = q.sym<Ctx>(
 // author_requires 'Foo::Bar' => 1.023;
 const moduleMatch = q
   .alt(requirementMatch, phasedRequiresMatch)
-  .str((ctx, { value: depName }) => ({ ...ctx, depName }))
+  .str((ctx, { value: packageName }) => ({ ...ctx, packageName }))
   .opt(
     q.alt<Ctx>(q.op(','), q.op('=>')).alt(
       q.num<Ctx>((ctx, { value: currentValue }) => ({ ...ctx, currentValue })),
@@ -76,15 +76,16 @@ const moduleMatch = q
   )
   .op(';')
   .handler((ctx) => {
-    const { phase, tempPhase, depName, currentValue } = ctx;
+    const { phase, tempPhase, packageName, currentValue } = ctx;
 
     delete ctx.tempPhase;
-    delete ctx.depName;
+    delete ctx.packageName;
     delete ctx.currentValue;
 
-    if (depName) {
+    if (packageName) {
       const dep: PackageDependency = {
-        depName,
+        datasource: CpanDatasource.id,
+        packageName,
       };
       if (currentValue) {
         dep.currentValue = currentValue;
@@ -97,7 +98,6 @@ const moduleMatch = q
         dep.depType = tempPhase;
       }
 
-      dep.datasource = CpanDatasource.id;
       ctx.deps.push(dep);
     }
 

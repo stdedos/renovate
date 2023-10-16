@@ -1,5 +1,5 @@
 export interface ParsedLine {
-  depName?: string;
+  packageName?: string;
   groupName?: string;
   spec?: string;
   subspec?: string;

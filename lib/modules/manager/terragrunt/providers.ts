@@ -35,7 +35,7 @@ export function extractTerragruntProvider(
     moduleName,
     terragruntDependencyType: 'terraform',
   };
-  const dep: PackageDependency<TerraformManagerData> = { managerData };
+  const dep: Partial<PackageDependency<TerraformManagerData>> = { managerData };
   const teraformContent = lines
     .slice(lineNumber)
     .join('\n')

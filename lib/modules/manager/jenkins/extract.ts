@@ -14,7 +14,7 @@ function getDependency(plugin: JenkinsPlugin): PackageDependency {
   const dep: PackageDependency = {
     datasource: JenkinsPluginsDatasource.id,
     versioning: mavenVersioning.id,
-    depName: plugin.artifactId,
+    packageName: plugin.artifactId!,
   };
 
   if (plugin.source?.version) {

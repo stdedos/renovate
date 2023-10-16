@@ -26,10 +26,13 @@ export const validMatchFields = [
 type ValidMatchFields = (typeof validMatchFields)[number];
 
 function updateDependency(
-  dependency: PackageDependency,
+  dependency: PackageDependency | undefined,
   field: ValidMatchFields,
   value: string
 ): void {
+  if (!dependency) {
+    return;
+  }
   switch (field) {
     case 'registryUrl':
       // check if URL is valid and pack inside an array
@@ -57,7 +60,7 @@ export function createDependency(
   config: RegexManagerConfig,
   dep?: PackageDependency
 ): PackageDependency | null {
-  const dependency = dep ?? {};
+  const dependency = dep;
   const { groups, replaceString } = extractionTemplate;
 
   for (const field of validMatchFields) {
@@ -78,8 +81,11 @@ export function createDependency(
       updateDependency(dependency, field, groups[field]);
     }
   }
-  dependency.replaceString = replaceString;
-  return dependency;
+  if (dependency) {
+    dependency.replaceString = replaceString;
+    return dependency;
+  }
+  return null;
 }
 
 export function regexMatchAll(

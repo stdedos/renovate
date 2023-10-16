@@ -32,7 +32,7 @@ export async function extractPackageFile(
 
     const dep: PackageDependency = {
       datasource: HermitDatasource.id,
-      depName: p.Name,
+      packageName: p.Name,
       currentValue: version,
     };
 

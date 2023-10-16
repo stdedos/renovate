@@ -46,7 +46,7 @@ export function extractFromVectors(
 
   const yieldDep = (): void => {
     if (!commentLevel && artifactId && version) {
-      const depName = expandDepName(cleanStrLiteral(artifactId));
+      const packageName = expandDepName(cleanStrLiteral(artifactId));
       if (version.startsWith('~')) {
         const varName = version.replace(regEx(/^~\s*/), '');
         const currentValue = vars[varName];
@@ -54,7 +54,7 @@ export function extractFromVectors(
           result.push({
             ...ctx,
             datasource: ClojureDatasource.id,
-            depName,
+            packageName,
             currentValue,
             groupName: varName,
           });
@@ -63,7 +63,7 @@ export function extractFromVectors(
         result.push({
           ...ctx,
           datasource: ClojureDatasource.id,
-          depName,
+          packageName,
           currentValue: cleanStrLiteral(version),
         });
       }

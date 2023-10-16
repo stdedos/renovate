@@ -53,7 +53,9 @@ export function extractTFLintPlugin(
   } while (braceCounter !== 0);
 
   const dep = analyseTFLintPlugin(pluginSource, currentVersion);
-  deps.push(dep);
+  if (dep) {
+    deps.push(dep);
+  }
 
   // remove last lineNumber addition to not skip a line after the last bracket
   lineNumber -= 1;
@@ -63,25 +65,20 @@ export function extractTFLintPlugin(
 function analyseTFLintPlugin(
   source: string | null,
   version: string | null
-): PackageDependency {
-  const dep: PackageDependency = {};
-
-  if (source) {
-    dep.depType = 'plugin';
-
-    const sourceParts = source.split('/');
-    if (sourceParts[0] === 'github.com') {
-      dep.currentValue = version;
-      dep.datasource = GithubReleasesDatasource.id;
-      dep.depName = sourceParts.slice(1).join('/');
-    } else {
-      dep.skipReason = 'unsupported-datasource';
-      dep.depName = source;
-    }
-  } else {
-    logger.debug({ dep }, 'tflint plugin has no source');
-    dep.skipReason = 'no-source';
+): PackageDependency | null {
+  if (!source) {
+    return null;
   }
+  const depType = 'plugin';
 
-  return dep;
+  const sourceParts = source.split('/');
+  if (sourceParts[0] === 'github.com') {
+    return {
+      depType,
+      datasource: GithubReleasesDatasource.id,
+      currentValue: version,
+      packageName: sourceParts.slice(1).join('/'),
+    };
+  }
+  return null;
 }

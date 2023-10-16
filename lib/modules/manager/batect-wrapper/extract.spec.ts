@@ -18,7 +18,7 @@ describe('modules/manager/batect-wrapper/extract', () => {
       const res = extractPackageFile(Fixtures.get('valid-wrapper'));
 
       const expectedDependency: PackageDependency = {
-        depName: 'batect/batect',
+        packageName: 'batect/batect',
         commitMessageTopic: 'Batect',
         currentValue: '0.60.1',
         datasource: GithubReleasesDatasource.id,
@@ -32,7 +32,7 @@ describe('modules/manager/batect-wrapper/extract', () => {
       const res = extractPackageFile(Fixtures.get('malformed-wrapper'));
 
       const expectedDependency: PackageDependency = {
-        depName: 'batect/batect',
+        packageName: 'batect/batect',
         commitMessageTopic: 'Batect',
         currentValue: '0.60.1',
         datasource: GithubReleasesDatasource.id,

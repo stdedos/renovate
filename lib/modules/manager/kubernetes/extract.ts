@@ -85,7 +85,7 @@ function extractApis(
     )
     .filter((m) => supportedApis.has(m.kind))
     .map((configuration) => ({
-      depName: configuration.kind,
+      packageName: configuration.kind,
       currentValue: configuration.apiVersion,
       datasource: KubernetesApiDatasource.id,
       versioning: kubernetesApiVersioning.id,

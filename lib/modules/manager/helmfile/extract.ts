@@ -63,12 +63,12 @@ export async function extractPackageFile(
     logger.debug({ registryAliases }, 'repositories discovered.');
 
     for (const dep of doc.releases) {
-      let depName = dep.chart;
+      let packageName = dep.chart;
       let repoName: string | null = null;
 
       if (!is.string(dep.chart)) {
         deps.push({
-          depName: dep.name,
+          packageName: dep.name,
           skipReason: 'invalid-name',
         });
         continue;
@@ -83,7 +83,7 @@ export async function extractPackageFile(
           needKustomize = true;
         }
         deps.push({
-          depName: dep.name,
+          packageName: dep.name,
           skipReason: 'local-chart',
         });
         continue;
@@ -96,21 +96,22 @@ export async function extractPackageFile(
       if (dep.chart.includes('/')) {
         const v = dep.chart.split('/');
         repoName = v.shift()!;
-        depName = v.join('/');
+        packageName = v.join('/');
       } else {
         repoName = dep.chart;
       }
 
       if (!is.string(dep.version)) {
         deps.push({
-          depName,
+          packageName,
           skipReason: 'invalid-version',
         });
         continue;
       }
 
       const res: PackageDependency = {
-        depName,
+        packageName,
+        datasource: HelmDatasource.id,
         currentValue: dep.version,
         registryUrls: [registryAliases[repoName]]
           .concat([config.registryAliases?.[repoName]] as string[])
@@ -125,7 +126,7 @@ export async function extractPackageFile(
       );
       if (repository?.oci) {
         res.datasource = DockerDatasource.id;
-        res.packageName = registryAliases[repoName] + '/' + depName;
+        res.packageName = registryAliases[repoName] + '/' + packageName;
       }
 
       // By definition on helm the chart name should be lowercase letter + number + -
@@ -146,7 +147,6 @@ export async function extractPackageFile(
   return deps.length
     ? {
         deps,
-        datasource: HelmDatasource.id,
         ...(needKustomize && { managerData: { needKustomize } }),
       }
     : null;

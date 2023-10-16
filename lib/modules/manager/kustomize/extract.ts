@@ -51,7 +51,7 @@ export function extractResource(base: string): PackageDependency | null {
     return {
       currentValue: match.groups.currentValue,
       datasource: GithubTagsDatasource.id,
-      depName: match.groups.project.replace('.git', ''),
+      packageName: match.groups.project.replace('.git', ''),
     };
   }
 
@@ -73,7 +73,10 @@ export function extractImage(image: Image): PackageDependency | null {
     return null;
   }
   const nameDep = splitImageParts(nameToSplit);
-  const { depName } = nameDep;
+  const { packageName } = nameDep;
+  if (!packageName) {
+    return null;
+  }
   const { digest, newTag } = image;
   if (digest && newTag) {
     logger.debug(
@@ -81,7 +84,7 @@ export function extractImage(image: Image): PackageDependency | null {
       'Kustomize ignores newTag when digest is provided. Pick one, or use `newTag: tag@digest`'
     );
     return {
-      depName,
+      packageName,
       currentValue: newTag,
       currentDigest: digest,
       skipReason: 'invalid-dependency-specification',
@@ -91,7 +94,7 @@ export function extractImage(image: Image): PackageDependency | null {
   if (digest) {
     if (!is.string(digest) || !digest.startsWith('sha256:')) {
       return {
-        depName,
+        packageName,
         currentValue: digest,
         skipReason: 'invalid-value',
       };
@@ -99,7 +102,7 @@ export function extractImage(image: Image): PackageDependency | null {
 
     return {
       datasource: DockerDatasource.id,
-      depName,
+      packageName,
       currentValue: nameDep.currentValue,
       currentDigest: digest,
       replaceString: digest,
@@ -109,14 +112,14 @@ export function extractImage(image: Image): PackageDependency | null {
   if (newTag) {
     if (!is.string(newTag) || newTag.startsWith('sha256:')) {
       return {
-        depName,
+        packageName,
         currentValue: newTag,
         skipReason: 'invalid-value',
       };
     }
 
     // TODO: types (#22198)
-    const dep = splitImageParts(`${depName}:${newTag}`);
+    const dep = splitImageParts(`${packageName}:${newTag}`);
     return {
       ...dep,
       datasource: DockerDatasource.id,
@@ -143,7 +146,7 @@ export function extractHelmChart(
   }
 
   return {
-    depName: helmChart.name,
+    packageName: helmChart.name,
     currentValue: helmChart.version,
     registryUrls: [helmChart.repo],
     datasource: HelmDatasource.id,

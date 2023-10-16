@@ -6,7 +6,7 @@ import type {
 
 export interface ExtractionResult {
   lineNumber: number;
-  dependencies: PackageDependency<TerraformManagerData>[];
+  dependencies: Partial<PackageDependency<TerraformManagerData>>[];
 }
 
 export interface TerraformManagerData {

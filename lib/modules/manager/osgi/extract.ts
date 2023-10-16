@@ -86,7 +86,7 @@ export function extractPackageFile(
     const currentValue = parts[parts.length - 1];
     const result: PackageDependency = {
       datasource: MavenDatasource.id,
-      depName: `${parts[0]}:${parts[1]}`,
+      packageName: `${parts[0]}:${parts[1]}`,
     };
     if (currentValue.includes('${')) {
       result.skipReason = 'contains-variable';

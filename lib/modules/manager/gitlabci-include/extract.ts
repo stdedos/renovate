@@ -22,7 +22,7 @@ function extractDepFromIncludeFile(
 ): PackageDependency {
   const dep: PackageDependency = {
     datasource: GitlabTagsDatasource.id,
-    depName: includeObj.project,
+    packageName: includeObj.project,
     depType: 'repository',
   };
   if (!includeObj.ref) {

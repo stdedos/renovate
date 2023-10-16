@@ -65,13 +65,13 @@ export function extractPackageFile(content: string): PackageFileContent | null {
 
   const pkgRegex = regEx(`^(${packagePattern})$`);
   const pkgValRegex = regEx(`^${dependencyPattern}$`);
-  const deps = content
+  const deps: PackageDependency[] = content
     .split(newlineRegex)
     .map((rawline) => {
-      let dep: PackageDependency = {};
+      let dep: PackageDependency | undefined;
       const [line, comment] = rawline.split('#').map((part) => part.trim());
       if (isSkipComment(comment)) {
-        dep.skipReason = 'ignored';
+        return null;
       }
       const [lineNoEnvMarkers] = line.split(';').map((part) => part.trim());
       const lineNoHashes = lineNoEnvMarkers.split(' \\')[0];
@@ -109,11 +109,11 @@ export function extractPackageFile(content: string): PackageFileContent | null {
       }
 
       // validated above
-      const [, depName, , currVal] = packageMatches!;
+      const [, packageName, , currVal] = packageMatches!;
       const currentValue = currVal?.trim();
       dep = {
         ...dep,
-        depName,
+        packageName,
         currentValue,
         datasource: PypiDatasource.id,
       };

@@ -11,7 +11,7 @@ export function extractPackageFile(
   const extractResult = extractGradleVersion(fileContent);
   if (extractResult) {
     const dependency: PackageDependency = {
-      depName: 'gradle',
+      packageName: 'gradle',
       currentValue: extractResult.version,
       replaceString: extractResult.url,
       datasource: GradleVersionDatasource.id,

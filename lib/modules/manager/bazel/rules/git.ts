@@ -29,28 +29,35 @@ export const GitTarget = z
   })
   .refine(({ tag, commit }) => !!tag || !!commit)
   .transform(({ rule, name, tag, commit, remote }): PackageDependency[] => {
-    const dep: PackageDependency = {
-      depType: rule,
-      depName: name,
-    };
+    let currentValue: string | undefined;
+    let currentDigest: string | undefined;
+    let datasource: string | undefined;
+    let packageName = name;
 
     if (tag) {
-      dep.currentValue = tag;
+      currentValue = tag;
     }
 
     if (commit) {
-      dep.currentDigest = commit;
+      currentDigest = commit;
     }
 
     const githubPackage = githubPackageName(remote);
     if (githubPackage) {
-      dep.datasource = GithubReleasesDatasource.id;
-      dep.packageName = githubPackage;
+      datasource = GithubReleasesDatasource.id;
+      packageName = githubPackage;
     }
 
-    if (!dep.datasource) {
-      dep.skipReason = 'unsupported-datasource';
+    if (!datasource) {
+      return [];
     }
+
+    const dep: PackageDependency = {
+      datasource,
+      packageName,
+      currentValue,
+      currentDigest,
+    };
 
     return [dep];
   });

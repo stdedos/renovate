@@ -70,7 +70,7 @@ function extractGitBundles(config: BatectConfig): BatectGitInclude[] {
 
 function createBundleDependency(bundle: BatectGitInclude): PackageDependency {
   return {
-    depName: bundle.repo,
+    packageName: bundle.repo,
     currentValue: bundle.ref,
     versioning: semverVersioning,
     datasource: GitTagsDatasource.id,

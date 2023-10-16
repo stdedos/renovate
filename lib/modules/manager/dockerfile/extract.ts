@@ -127,20 +127,21 @@ export function splitImageParts(currentFrom: string): PackageDependency {
 
   const [currentDepTag, currentDigest] = cleanedCurrentFrom.split('@');
   const depTagSplit = currentDepTag.split(':');
-  let depName: string;
+  let packageName: string;
   let currentValue: string | undefined;
   if (
     depTagSplit.length === 1 ||
     depTagSplit[depTagSplit.length - 1].includes('/')
   ) {
-    depName = currentDepTag;
+    packageName = currentDepTag;
   } else {
     currentValue = depTagSplit.pop();
-    depName = depTagSplit.join(':');
+    packageName = depTagSplit.join(':');
   }
 
   const dep: PackageDependency = {
-    depName,
+    datasource: DockerDatasource.id,
+    packageName,
     currentValue,
     currentDigest,
   };

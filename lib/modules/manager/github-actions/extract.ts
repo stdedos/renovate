@@ -8,12 +8,16 @@ import { GithubRunnersDatasource } from '../../datasource/github-runners';
 import { GithubTagsDatasource } from '../../datasource/github-tags';
 import * as dockerVersioning from '../../versioning/docker';
 import { getDep } from '../dockerfile/extract';
-import type { PackageDependency, PackageFileContent } from '../types';
+import type {
+  PackageDependency,
+  PackageDependencyBase,
+  PackageFileContent,
+} from '../types';
 import type { Workflow } from './types';
 
 const dockerActionRe = regEx(/^\s+uses: ['"]?docker:\/\/([^'"]+)\s*$/);
 const actionRe = regEx(
-  /^\s+-?\s+?uses: (?<replaceString>['"]?(?<depName>[\w-]+\/[.\w-]+)(?<path>\/.*)?@(?<currentValue>[^\s'"]+)['"]?(?:\s+#\s*(?:renovate\s*:\s*)?(?:pin\s+|tag\s*=\s*)?@?(?<tag>v?\d+(?:\.\d+(?:\.\d+)?)?))?)/
+  /^\s+-?\s+?uses: (?<replaceString>['"]?(?<packageName>[\w-]+\/[.\w-]+)(?<path>\/.*)?@(?<currentValue>[^\s'"]+)['"]?(?:\s+#\s*(?:renovate\s*:\s*)?(?:pin\s+|tag\s*=\s*)?@?(?<tag>v?\d+(?:\.\d+(?:\.\d+)?)?))?)/
 );
 
 // SHA1 or SHA256, see https://github.blog/2020-10-19-git-2-29-released/
@@ -23,7 +27,7 @@ const shaShortRe = regEx(/^[a-f0-9]{6,7}$/);
 // detects if we run against a Github Enterprise Server and adds the URL to the beginning of the registryURLs for looking up Actions
 // This reflects the behavior of how GitHub looks up Actions
 // First on the Enterprise Server, then on GitHub.com
-function detectCustomGitHubRegistryUrlsForActions(): PackageDependency {
+function detectCustomGitHubRegistryUrlsForActions(): PackageDependencyBase {
   const endpoint = GlobalConfig.get('endpoint');
   const registryUrls = ['https://github.com'];
   if (endpoint && GlobalConfig.get('platform') === 'github') {
@@ -64,7 +68,7 @@ function extractWithRegex(content: string): PackageDependency[] {
     const tagMatch = actionRe.exec(line);
     if (tagMatch?.groups) {
       const {
-        depName,
+        packageName,
         currentValue,
         path = '',
         tag,
@@ -78,13 +82,13 @@ function extractWithRegex(content: string): PackageDependency[] {
         quotes = '"';
       }
       const dep: PackageDependency = {
-        depName,
-        commitMessageTopic: '{{{depName}}} action',
+        packageName,
+        commitMessageTopic: '{{{packageName}}} action',
         datasource: GithubTagsDatasource.id,
         versioning: dockerVersioning.id,
         depType: 'action',
         replaceString,
-        autoReplaceStringTemplate: `${quotes}{{depName}}${path}@{{#if newDigest}}{{newDigest}}${quotes}{{#if newValue}} # {{newValue}}{{/if}}{{/if}}{{#unless newDigest}}{{newValue}}${quotes}{{/unless}}`,
+        autoReplaceStringTemplate: `${quotes}{{packageName}}${path}@{{#if newDigest}}{{newDigest}}${quotes}{{#if newValue}} # {{newValue}}{{/if}}{{/if}}{{#unless newDigest}}{{newValue}}${quotes}{{/unless}}`,
         ...customRegistryUrlsPackageDependency,
       };
       if (shaRe.test(currentValue)) {
@@ -115,7 +119,7 @@ function extractContainer(container: unknown): PackageDependency | undefined {
 }
 
 const runnerVersionRegex = regEx(
-  /^\s*(?<depName>[a-zA-Z]+)-(?<currentValue>[^\s]+)/
+  /^\s*(?<packageName>[a-zA-Z]+)-(?<currentValue>[^\s]+)/
 );
 
 function extractRunner(runner: string): PackageDependency | null {
@@ -124,19 +128,19 @@ function extractRunner(runner: string): PackageDependency | null {
     return null;
   }
 
-  const { depName, currentValue } = runnerVersionGroups;
+  const { packageName, currentValue } = runnerVersionGroups;
 
-  if (!GithubRunnersDatasource.isValidRunner(depName, currentValue)) {
+  if (!GithubRunnersDatasource.isValidRunner(packageName, currentValue)) {
     return null;
   }
 
   const dependency: PackageDependency = {
-    depName,
+    packageName,
     currentValue,
-    replaceString: `${depName}-${currentValue}`,
+    replaceString: `${packageName}-${currentValue}`,
     depType: 'github-runner',
     datasource: GithubRunnersDatasource.id,
-    autoReplaceStringTemplate: '{{depName}}-{{newValue}}',
+    autoReplaceStringTemplate: '{{packageName}}-{{newValue}}',
   };
 
   if (!dockerVersioning.api.isValid(currentValue)) {

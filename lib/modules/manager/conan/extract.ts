@@ -1,5 +1,6 @@
 import is from '@sindresorhus/is';
 import { regEx } from '../../../util/regex';
+import { ConanDatasource } from '../../datasource/conan';
 import type { PackageDependency, PackageFileContent } from '../types';
 import { isComment } from './common';
 
@@ -41,7 +42,6 @@ export function extractPackageFile(content: string): PackageFileContent | null {
         for (const line of lines) {
           const matches = regex.exec(line.trim());
           if (matches?.groups) {
-            let dep: PackageDependency = {};
             const depName = matches.groups?.name;
             const currentValue = matches.groups?.version.trim();
 
@@ -55,8 +55,8 @@ export function extractPackageFile(content: string): PackageFileContent | null {
             }
             const packageName = `${depName}/${currentValue}${userAndChannel}`;
 
-            dep = {
-              ...dep,
+            const dep: PackageDependency = {
+              datasource: ConanDatasource.id,
               depName,
               packageName,
               currentValue,

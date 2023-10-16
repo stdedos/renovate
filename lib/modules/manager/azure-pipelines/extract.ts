@@ -92,7 +92,7 @@ export function extractAzurePipelinesTasks(
   const match = AzurePipelinesTaskRegex.exec(task);
   if (match?.groups) {
     return {
-      depName: match.groups.name,
+      packageName: match.groups.name,
       currentValue: match.groups.version,
       datasource: AzurePipelinesTasksDatasource.id,
     };

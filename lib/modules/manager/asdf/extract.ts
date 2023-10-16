@@ -17,10 +17,10 @@ export function extractPackageFile(content: string): PackageFileContent | null {
   for (const groups of [...content.matchAll(regex)]
     .map((m) => m.groups)
     .filter(is.truthy)) {
-    const depName = groups.toolName.trim();
+    const packageName = groups.toolName.trim();
     const version = groups.version.trim();
 
-    const toolConfig = upgradeableTooling[depName];
+    const toolConfig = upgradeableTooling[packageName];
     const toolDefinition = toolConfig
       ? typeof toolConfig.config === 'function'
         ? toolConfig.config(version)
@@ -30,7 +30,7 @@ export function extractPackageFile(content: string): PackageFileContent | null {
     if (toolDefinition) {
       const dep: PackageDependency = {
         currentValue: version,
-        depName,
+        packageName,
         ...toolDefinition,
       };
       if (isSkipComment((groups.comment ?? '').trim())) {
@@ -40,7 +40,7 @@ export function extractPackageFile(content: string): PackageFileContent | null {
       deps.push(dep);
     } else {
       const dep: PackageDependency = {
-        depName,
+        packageName,
         skipReason: 'unsupported-datasource',
       };
 

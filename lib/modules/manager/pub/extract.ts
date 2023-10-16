@@ -24,12 +24,12 @@ function extractFromSection(
     'meta',
   ];
   const deps: PackageDependency[] = [];
-  for (const depName of Object.keys(sectionContent)) {
-    if (skippedPackages.includes(depName)) {
+  for (const packageName of Object.keys(sectionContent)) {
+    if (skippedPackages.includes(packageName)) {
       continue;
     }
 
-    let currentValue = sectionContent[depName];
+    let currentValue = sectionContent[packageName];
     let skipReason: SkipReason | undefined;
 
     if (!is.string(currentValue)) {
@@ -46,7 +46,7 @@ function extractFromSection(
     }
 
     deps.push({
-      depName,
+      packageName,
       depType: sectionKey,
       currentValue,
       datasource: DartDatasource.id,
@@ -60,7 +60,7 @@ function extractFromSection(
 function extractDart(pubspec: PubspecSchema): PackageDependency[] {
   return [
     {
-      depName: 'dart',
+      packageName: 'dart',
       currentValue: pubspec.environment.sdk,
       datasource: DartVersionDatasource.id,
     },
@@ -75,7 +75,7 @@ function extractFlutter(pubspec: PubspecSchema): PackageDependency[] {
 
   return [
     {
-      depName: 'flutter',
+      packageName: 'flutter',
       currentValue,
       datasource: FlutterVersionDatasource.id,
     },

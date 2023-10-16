@@ -57,7 +57,8 @@ export async function extractPackageFile(
   }
   deps = validDependencies.map((dep) => {
     const res: PackageDependency = {
-      depName: dep.name,
+      datasource: HelmDatasource.id,
+      packageName: dep.name,
       currentValue: dep.version,
     };
     if (!dep.repository) {
@@ -79,7 +80,6 @@ export async function extractPackageFile(
   });
   const res: PackageFileContent = {
     deps,
-    datasource: HelmDatasource.id,
     packageFileVersion,
   };
   const lockFileName = getSiblingFileName(packageFile, 'Chart.lock');

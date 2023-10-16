@@ -7,7 +7,11 @@ import { GitRefsDatasource } from '../../datasource/git-refs';
 import { GithubTagsDatasource } from '../../datasource/github-tags';
 import { GitlabTagsDatasource } from '../../datasource/gitlab-tags';
 import { MAVEN_REPO } from '../../datasource/maven/common';
-import type { PackageDependency, PackageFileContent } from '../types';
+import type {
+  PackageDependency,
+  PackageDependencyBase,
+  PackageFileContent,
+} from '../types';
 import { parseDepsEdnFile } from './parser';
 import type {
   ParsedEdnData,
@@ -140,7 +144,7 @@ function extractDependency(
   }
   const depName = key;
 
-  const dep: PackageDependency = {
+  const dep: PackageDependencyBase = {
     depName,
     packageName,
     currentValue: null,
@@ -157,11 +161,11 @@ function extractDependency(
     dep.currentValue = mvnVersion;
     dep.packageName = packageName.replace('/', ':');
     dep.registryUrls = [...mavenRegistries];
-    return dep;
+    return dep as PackageDependency;
   }
 
-  resolveGitPackageFromEdnVal(dep, val);
-  resolveGitPackageFromEdnKey(dep, key);
+  resolveGitPackageFromEdnVal(dep as PackageDependency, val);
+  resolveGitPackageFromEdnKey(dep as PackageDependency, key);
 
   if (dep.datasource) {
     const gitTag = val['git/tag'];
@@ -175,7 +179,7 @@ function extractDependency(
       dep.currentDigestShort = gitSha.slice(0, 7);
     }
 
-    return dep;
+    return dep as PackageDependency;
   }
 
   return null;

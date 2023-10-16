@@ -23,11 +23,11 @@ function cleanupNamedGroups(regexSource: string): string {
 
 const rangePattern = cleanupNamedGroups(RANGE_PATTERN);
 const versionPattern = `(?:${rangePattern}(?:\\s*,\\s*${rangePattern})*)`;
-const depNamePattern = '(?:[a-zA-Z][-_a-zA-Z0-9\\.]*[a-zA-Z0-9])';
+const packageName = '(?:[a-zA-Z][-_a-zA-Z0-9\\.]*[a-zA-Z0-9])';
 const depPattern = [
   '^',
-  `(?<depName>${depNamePattern})`,
-  `(?<extra>(?:\\[\\s*(?:${depNamePattern}(?:\\s*,\\s*${depNamePattern})*\\s*)\\])?)`,
+  `(?<packageName>${packageName})`,
+  `(?<extra>(?:\\[\\s*(?:${packageName}(?:\\s*,\\s*${packageName})*\\s*)\\])?)`,
   `(?<currentValue>${versionPattern})`,
 ].join('\\s*');
 
@@ -41,10 +41,10 @@ function depStringHandler(
   const depStr = token.value;
   const match = extractRegex.exec(depStr);
   // TODO #22198
-  const { depName, currentValue } = match!.groups!;
+  const { packageName, currentValue } = match!.groups!;
 
   const dep: PackageDependency<ManagerData> = {
-    depName,
+    packageName,
     currentValue,
     managerData: {
       lineNumber: token.line - 1,

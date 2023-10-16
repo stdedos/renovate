@@ -26,18 +26,18 @@ export function extractMsbuildGlobalManifest(
   if (manifest.sdk?.version) {
     deps.push({
       depType: 'dotnet-sdk',
-      depName: 'dotnet-sdk',
+      packageName: 'dotnet-sdk',
       currentValue: manifest.sdk?.version,
       datasource: DotnetVersionDatasource.id,
     });
   }
 
   if (manifest['msbuild-sdks']) {
-    for (const depName of Object.keys(manifest['msbuild-sdks'])) {
-      const currentValue = manifest['msbuild-sdks'][depName];
+    for (const packageName of Object.keys(manifest['msbuild-sdks'])) {
+      const currentValue = manifest['msbuild-sdks'][packageName];
       const dep: PackageDependency = {
         depType: 'msbuild-sdk',
-        depName,
+        packageName,
         currentValue,
         datasource: NugetDatasource.id,
       };

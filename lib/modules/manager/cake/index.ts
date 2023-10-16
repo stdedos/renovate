@@ -33,12 +33,12 @@ function parseDependencyLine(line: string): PackageDependency | null {
 
     const { origin: registryUrl, protocol, searchParams } = new URL(url);
 
-    const depName = searchParams.get('package')!;
+    const packageName = searchParams.get('package')!;
     const currentValue = searchParams.get('version') ?? undefined;
 
     const result: PackageDependency = {
       datasource: NugetDatasource.id,
-      depName,
+      packageName,
       currentValue,
     };
 

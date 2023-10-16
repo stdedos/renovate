@@ -141,11 +141,17 @@ export const HttpTarget = z
       return [];
     }
 
+    const { datasource, packageName } = parsedUrl;
+
+    if (!datasource || !packageName) {
+      return [];
+    }
+
     const dep: PackageDependency = {
-      datasource: parsedUrl.datasource,
+      datasource,
       depType: rule,
       depName: name,
-      packageName: parsedUrl.packageName,
+      packageName,
     };
 
     // We don't want to set both `currentValue` and `currentDigest`.

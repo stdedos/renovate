@@ -13,13 +13,14 @@ function getDep(
   type: string
 ): PackageDependency {
   const [, , currentValue] = match;
-  let [, depName] = match;
-  depName = depName.replace(regEx(/"/g), '');
+  let [, packageName] = match;
+  packageName = packageName.replace(regEx(/"/g), '');
   const dep: PackageDependency = {
     managerData: {
       lineNumber,
     },
-    depName,
+    datasource: GolangVersionDatasource.id,
+    packageName,
     depType: type,
     currentValue,
   };
@@ -41,7 +42,7 @@ function getGoDep(lineNumber: number, goVer: string): PackageDependency {
     managerData: {
       lineNumber,
     },
-    depName: 'go',
+    packageName: 'go',
     depType: 'golang',
     currentValue: goVer,
     datasource: GolangVersionDatasource.id,

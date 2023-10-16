@@ -30,7 +30,7 @@ function extractFromSection(
 
   const deps = Object.entries(pipfileSection)
     .map((x) => {
-      const [depName, requirements] = x;
+      const [packageName, requirements] = x;
       let currentValue: string | undefined;
       let nestedVersion = false;
       let skipReason: SkipReason | undefined;
@@ -52,10 +52,10 @@ function extractFromSection(
         skipReason = 'unspecified-version';
       }
       if (!skipReason) {
-        const packageMatches = packageRegex.exec(depName);
+        const packageMatches = packageRegex.exec(packageName);
         if (!packageMatches) {
           logger.debug(
-            `Skipping dependency with malformed package name "${depName}".`
+            `Skipping dependency with malformed package name "${packageName}".`
           );
           skipReason = 'invalid-name';
         }
@@ -69,8 +69,9 @@ function extractFromSection(
         }
       }
       const dep: PackageDependency = {
+        datasource: PypiDatasource.id,
         depType: section,
-        depName,
+        packageName,
         managerData: {},
       };
       if (currentValue) {
@@ -78,8 +79,6 @@ function extractFromSection(
       }
       if (skipReason) {
         dep.skipReason = skipReason;
-      } else {
-        dep.datasource = PypiDatasource.id;
       }
       if (nestedVersion) {
         // TODO #22198

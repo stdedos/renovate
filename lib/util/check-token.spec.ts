@@ -58,7 +58,16 @@ describe('util/check-token', () => {
     it('does not warn if there is dependencies with GitHub sourceUrl', () => {
       hostRules.find.mockReturnValueOnce({});
       checkGithubToken({
-        npm: [{ deps: [{ depName: 'renovatebot/renovate' }] }],
+        npm: [
+          {
+            deps: [
+              {
+                datasource: 'some-datasource',
+                packageName: 'renovatebot/renovate',
+              },
+            ],
+          },
+        ],
       });
       expect(logger.logger.warn).not.toHaveBeenCalled();
     });
@@ -70,7 +79,7 @@ describe('util/check-token', () => {
           {
             deps: [
               {
-                depName: 'foo/bar',
+                packageName: 'foo/bar',
                 datasource: GithubTagsDatasource.id,
               },
             ],
@@ -87,7 +96,7 @@ describe('util/check-token', () => {
           {
             deps: [
               {
-                depName: 'foo/bar',
+                packageName: 'foo/bar',
                 datasource: GithubReleasesDatasource.id,
               },
             ],
@@ -104,11 +113,11 @@ describe('util/check-token', () => {
           {
             deps: [
               {
-                depName: 'foo/foo',
+                packageName: 'foo/foo',
                 datasource: GithubTagsDatasource.id,
               },
               {
-                depName: 'bar/bar',
+                packageName: 'bar/bar',
                 datasource: GithubReleasesDatasource.id,
               },
             ],

@@ -7,14 +7,13 @@ import { clone } from '../../../util/clone';
 import { regEx } from '../../../util/regex';
 import { BazelDatasource } from '../../datasource/bazel';
 import { GithubTagsDatasource } from '../../datasource/github-tags';
-import type { PackageDependency } from '../types';
+import type { PackageDependency, PackageDependencyBase } from '../types';
 import { RecordFragmentSchema, StringFragmentSchema } from './fragments';
 
 // Rule Schemas
 
-export interface BasePackageDep extends PackageDependency {
+export interface BasePackageDep extends PackageDependencyBase {
   depType: string;
-  depName: string;
 }
 
 type BasePackageDepMergeKeys = Extract<keyof BasePackageDep, 'registryUrls'>;
@@ -75,7 +74,7 @@ const BazelDepToPackageDep = RecordFragmentSchema.extend({
   ({ children: { rule, name, version } }): BasePackageDep => ({
     datasource: BazelDatasource.id,
     depType: rule.value,
-    depName: name.value,
+    packageName: name.value,
     currentValue: version.value,
   })
 );

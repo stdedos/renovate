@@ -54,14 +54,14 @@ function depFromNode(
   }
 
   if (groupId && artifactId && currentValue) {
-    const depName = `${groupId}:${artifactId}`;
+    const packageName = `${groupId}:${artifactId}`;
     const versionNode = node.descendantWithPath('version')!;
     const fileReplacePosition = versionNode.position;
     const datasource = MavenDatasource.id;
     const registryUrls = [MAVEN_REPO];
     const result: PackageDependency = {
       datasource,
-      depName,
+      packageName,
       currentValue,
       fileReplacePosition,
       registryUrls,
@@ -268,7 +268,6 @@ export function extractPackage(
   }
 
   const result: MavenInterimPackageFile = {
-    datasource: MavenDatasource.id,
     packageFile,
     deps: [],
   };

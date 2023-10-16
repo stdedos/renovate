@@ -47,7 +47,7 @@ function extractDepsFromXml(xmlNode: XmlDocument): PackageDependency[] {
     const { name, attr } = child;
 
     if (elemNames.has(name)) {
-      const depName = attr?.Include || attr?.Update;
+      const packageName = attr?.Include || attr?.Update;
       const version =
         attr?.Version ??
         child.valueWithPath('Version') ??
@@ -56,11 +56,11 @@ function extractDepsFromXml(xmlNode: XmlDocument): PackageDependency[] {
       const currentValue = is.nonEmptyStringAndNotWhitespace(version)
         ? checkVersion.exec(version)?.groups?.currentValue?.trim()
         : undefined;
-      if (depName && currentValue) {
+      if (packageName && currentValue) {
         results.push({
           datasource: NugetDatasource.id,
           depType: 'nuget',
-          depName,
+          packageName,
           currentValue,
         });
       }
@@ -99,12 +99,12 @@ export async function extractPackageFile(
       return null;
     }
 
-    for (const depName of Object.keys(manifest.tools ?? {})) {
-      const tool = manifest.tools[depName];
+    for (const packageName of Object.keys(manifest.tools ?? {})) {
+      const tool = manifest.tools[packageName];
       const currentValue = tool.version;
       const dep: PackageDependency = {
         depType: 'nuget',
-        depName,
+        packageName,
         currentValue,
         datasource: NugetDatasource.id,
       };

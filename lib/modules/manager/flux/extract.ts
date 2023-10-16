@@ -151,7 +151,7 @@ function resolveSystemManifest(
 ): PackageDependency<FluxManagerData>[] {
   return [
     {
-      depName: 'fluxcd/flux2',
+      packageName: 'fluxcd/flux2',
       datasource: GithubReleasesDatasource.id,
       currentValue: manifest.version,
       managerData: {
@@ -170,7 +170,7 @@ function resolveResourceManifest(
     switch (resource.kind) {
       case 'HelmRelease': {
         const dep: PackageDependency = {
-          depName: resource.spec.chart.spec.chart,
+          packageName: resource.spec.chart.spec.chart,
           currentValue: resource.spec.chart.spec.version,
           datasource: HelmDatasource.id,
         };
@@ -215,13 +215,13 @@ function resolveResourceManifest(
       }
       case 'GitRepository': {
         const dep: PackageDependency = {
-          depName: resource.metadata.name,
+          datasource: GitRefsDatasource.id,
+          packageName: resource.metadata.name,
         };
 
         if (resource.spec.ref?.commit) {
           const gitUrl = resource.spec.url;
           dep.currentDigest = resource.spec.ref.commit;
-          dep.datasource = GitRefsDatasource.id;
           dep.packageName = gitUrl;
           dep.replaceString = resource.spec.ref.commit;
           if (gitUrl.startsWith('https://')) {
@@ -239,7 +239,8 @@ function resolveResourceManifest(
       case 'OCIRepository': {
         const container = resource.spec.url?.replace('oci://', '');
         let dep: PackageDependency = {
-          depName: container,
+          datasource: DockerDatasource.id,
+          packageName: container,
         };
         if (resource.spec.ref?.digest) {
           dep = getDep(`${container}@${resource.spec.ref.digest}`, false);

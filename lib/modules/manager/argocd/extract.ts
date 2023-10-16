@@ -64,14 +64,14 @@ function processSource(source: ApplicationSource): PackageDependency | null {
       registryURL = trimTrailingSlash(registryURL);
 
       return {
-        depName: `${registryURL}/${source.chart}`,
+        packageName: `${registryURL}/${source.chart}`,
         currentValue: source.targetRevision,
         datasource: DockerDatasource.id,
       };
     }
 
     return {
-      depName: source.chart,
+      packageName: source.chart,
       registryUrls: [source.repoURL],
       currentValue: source.targetRevision,
       datasource: HelmDatasource.id,
@@ -79,7 +79,7 @@ function processSource(source: ApplicationSource): PackageDependency | null {
   }
 
   return {
-    depName: source.repoURL,
+    packageName: source.repoURL,
     currentValue: source.targetRevision,
     datasource: GitTagsDatasource.id,
   };

@@ -17,7 +17,7 @@ export function extractPackageFile(
   }
 
   const dependency: PackageDependency = {
-    depName: 'batect/batect',
+    packageName: 'batect/batect',
     commitMessageTopic: 'Batect',
     currentValue: match[1],
     datasource: GithubReleasesDatasource.id,

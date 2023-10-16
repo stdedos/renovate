@@ -52,7 +52,6 @@ export interface PackageFileContent<T = Record<string, any>>
   extends ManagerData<T> {
   autoReplaceStringTemplate?: string;
   extractedConstraints?: Record<string, string>;
-  datasource?: string;
   registryUrls?: string[];
   additionalRegistryUrls?: string[];
   deps: PackageDependency[];
@@ -98,8 +97,10 @@ export interface LookupUpdate {
   registryUrl?: string;
 }
 
-export interface PackageDependency<T = Record<string, any>>
+export interface PackageDependencyBase<T = Record<string, any>>
   extends ManagerData<T> {
+  datasource?: string;
+  packageName?: string;
   currentValue?: string | null;
   currentDigest?: string;
   depName?: string;
@@ -107,7 +108,6 @@ export interface PackageDependency<T = Record<string, any>>
   fileReplacePosition?: number;
   groupName?: string;
   lineNumber?: number;
-  packageName?: string;
   target?: string;
   versioning?: string;
   dataType?: string;
@@ -125,7 +125,6 @@ export interface PackageDependency<T = Record<string, any>>
   warnings?: ValidationMessage[];
   commitMessageTopic?: string;
   currentDigestShort?: string;
-  datasource?: string;
   deprecationMessage?: string;
   digestOneAndOnly?: boolean;
   fixedVersion?: string;
@@ -148,7 +147,22 @@ export interface PackageDependency<T = Record<string, any>>
   indentation?: string;
 }
 
-export interface Upgrade<T = Record<string, any>> extends PackageDependency<T> {
+export interface SkippedDependency<T = Record<string, any>>
+  extends PackageDependencyBase<T> {
+  skipReason: SkipReason;
+}
+
+export interface ValidDependency<T = Record<string, any>>
+  extends PackageDependencyBase<T> {
+  datasource: string;
+  packageName: string;
+}
+
+export type PackageDependency<T = Record<string, any>> =
+  | SkippedDependency<T>
+  | ValidDependency<T>;
+
+export interface Upgrade<T = Record<string, any>> extends ValidDependency<T> {
   workspace?: string;
   isLockfileUpdate?: boolean;
   currentRawValue?: any;

@@ -42,7 +42,7 @@ describe('modules/manager/buildkite/extract', () => {
       const expectedPackageDependency: PackageDependency = {
         currentValue: 'v3.2.7',
         datasource: 'github-tags',
-        depName: 'some-org/some-plugin',
+        packageName: 'some-org/some-plugin',
         registryUrls: ['https://github.company.com'],
       };
       const res = extractPackageFile(Fixtures.get('pipeline6.yml'))?.deps;
@@ -55,7 +55,7 @@ describe('modules/manager/buildkite/extract', () => {
       const expectedPackageDependency: PackageDependency = {
         currentValue: 'v3.2.7',
         datasource: 'github-tags',
-        depName: 'some-org/some-plugin',
+        packageName: 'some-org/some-plugin',
         registryUrls: ['https://github.some-domain.com'],
       };
       expect(res).toEqual([expectedPackageDependency]);
@@ -66,7 +66,7 @@ describe('modules/manager/buildkite/extract', () => {
       const expectedPackageDependency: PackageDependency = {
         currentValue: 'v3.2.7',
         datasource: 'github-tags',
-        depName: 'some-org/some-plugin',
+        packageName: 'some-org/some-plugin',
         registryUrls: ['https://github.company.com'],
       };
       expect(res).toEqual([expectedPackageDependency]);
@@ -83,7 +83,7 @@ describe('modules/manager/buildkite/extract', () => {
       const bitbucketDependency: PackageDependency = {
         currentValue: 'v3.2.7',
         datasource: 'bitbucket-tags',
-        depName: 'some-org/some-plugin',
+        packageName: 'some-org/some-plugin',
         registryUrls: ['https://bitbucket.org'],
       };
       expect(res).toEqual([bitbucketDependency, githubDependency]);

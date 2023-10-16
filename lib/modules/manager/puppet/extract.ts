@@ -11,7 +11,10 @@ import type { PuppetfileModule } from './types';
 function parseForgeDependency(
   module: PuppetfileModule,
   forgeUrl: string | null
-): PackageDependency {
+): PackageDependency | null {
+  if (!module.name) {
+    return null;
+  }
   const dep: PackageDependency = {
     depName: module.name,
     datasource: PuppetForgeDatasource.id,
@@ -34,7 +37,7 @@ function parseGitDependency(module: PuppetfileModule): PackageDependency {
 
   if (!git || !tag) {
     return {
-      depName: moduleName,
+      packageName: moduleName,
       sourceUrl: git,
       skipReason: 'invalid-version',
     };
@@ -48,6 +51,7 @@ function parseGitDependency(module: PuppetfileModule): PackageDependency {
       `Access to github is only allowed for https, your url was: ${git}`
     );
     return {
+      datasource: PuppetForgeDatasource.id,
       depName: moduleName,
       sourceUrl: git,
       skipReason: 'invalid-url',
@@ -93,7 +97,7 @@ export function extractPackageFile(content: string): PackageFileContent | null {
 
   for (const forgeUrl of puppetFile.getForges()) {
     for (const module of puppetFile.getModulesOfForge(forgeUrl)) {
-      let packageDependency: PackageDependency;
+      let packageDependency: PackageDependency | null;
 
       if (isGitModule(module)) {
         packageDependency = parseGitDependency(module);
@@ -101,12 +105,14 @@ export function extractPackageFile(content: string): PackageFileContent | null {
         packageDependency = parseForgeDependency(module, forgeUrl);
       }
 
-      if (module.skipReason) {
+      if (packageDependency && module.skipReason) {
         // the PuppetfileModule skip reason is dominant over the packageDependency skip reason
         packageDependency.skipReason = module.skipReason;
       }
 
-      deps.push(packageDependency);
+      if (packageDependency) {
+        deps.push(packageDependency);
+      }
     }
   }
 

@@ -33,12 +33,12 @@ export function parseLine(line: string): ParsedLine {
   }
 
   if (result.spec) {
-    const depName = result.subspec
+    const packageName = result.subspec
       ? `${result.spec}/${result.subspec}`
       : result.spec;
     const groupName = result.spec;
-    if (depName) {
-      result.depName = depName;
+    if (packageName) {
+      result.packageName = packageName;
     }
     if (groupName) {
       result.groupName = groupName;
@@ -51,7 +51,11 @@ export function parseLine(line: string): ParsedLine {
 }
 
 export function gitDep(parsedLine: ParsedLine): PackageDependency | null {
-  const { depName, git, tag } = parsedLine;
+  const { packageName: depName, git, tag } = parsedLine;
+
+  if (!git) {
+    return null;
+  }
 
   const platformMatch = regEx(
     /[@/](?<platform>github|gitlab)\.com[:/](?<account>[^/]+)\/(?<repo>[^/]+)/
@@ -95,7 +99,7 @@ export async function extractPackageFile(
     const line = lines[lineNumber];
     const parsedLine = parseLine(line);
     const {
-      depName,
+      packageName,
       groupName,
       currentValue,
       git,
@@ -108,17 +112,17 @@ export async function extractPackageFile(
       registryUrls.push(source.replace(regEx(/\/*$/), ''));
     }
 
-    if (depName) {
+    if (packageName) {
       const managerData = { lineNumber };
       let dep: PackageDependency = {
-        depName,
+        packageName,
         groupName,
         skipReason: 'unspecified-version',
       };
 
       if (currentValue) {
         dep = {
-          depName,
+          packageName,
           groupName,
           datasource: PodDatasource.id,
           currentValue,
@@ -127,17 +131,20 @@ export async function extractPackageFile(
         };
       } else if (git) {
         if (tag) {
-          dep = { ...gitDep(parsedLine), managerData };
+          const gitDepRes = gitDep(parsedLine);
+          if (gitDepRes) {
+            dep = { ...gitDepRes, managerData };
+          }
         } else {
           dep = {
-            depName,
+            packageName,
             groupName,
             skipReason: 'git-dependency',
           };
         }
       } else if (path) {
         dep = {
-          depName,
+          packageName,
           groupName,
           skipReason: 'path-dependency',
         };

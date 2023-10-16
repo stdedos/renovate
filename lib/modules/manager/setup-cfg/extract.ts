@@ -68,11 +68,11 @@ function parseDep(
     return null;
   }
 
-  const [, depName, , currVal] = packageMatches;
+  const [, packageName, , currVal] = packageMatches;
   const currentValue = currVal?.trim();
 
   const dep: PackageDependency = {
-    depName,
+    packageName,
     currentValue,
     datasource: PypiDatasource.id,
     depType,

@@ -40,7 +40,7 @@ export function extractPackageFile(
             datasource = BitbucketTagsDatasource.id;
           }
           const dep: PackageDependency = {
-            depName: gitDepName,
+            packageName: gitDepName,
             currentValue,
             registryUrls: ['https://' + registry],
             datasource,
@@ -66,16 +66,24 @@ export function extractPackageFile(
           );
           skipReason = 'invalid-version';
         }
-        const dep: PackageDependency = {
-          depName,
-          currentValue,
-          skipReason,
-        };
+        let dep: PackageDependency | undefined;
         if (repo) {
-          dep.datasource = GithubTagsDatasource.id;
-          dep.packageName = repo;
+          dep = {
+            datasource: GithubTagsDatasource.id,
+            packageName: repo,
+            depName,
+            currentValue,
+          };
+        } else if (skipReason) {
+          dep = {
+            depName,
+            currentValue,
+            skipReason,
+          };
         }
-        deps.push(dep);
+        if (dep) {
+          deps.push(dep);
+        }
       }
     }
   } catch (err) /* istanbul ignore next */ {

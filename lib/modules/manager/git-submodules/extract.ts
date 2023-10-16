@@ -128,6 +128,7 @@ export default async function extractPackageFile(
         httpSubModuleUrl
       );
       deps.push({
+        datasource: GitRefsDatasource.id,
         depName: path,
         packageName: httpSubModuleUrl,
         currentValue,
@@ -141,5 +142,5 @@ export default async function extractPackageFile(
     }
   }
 
-  return { deps, datasource: GitRefsDatasource.id };
+  return { deps };
 }

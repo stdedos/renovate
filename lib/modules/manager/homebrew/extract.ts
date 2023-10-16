@@ -167,7 +167,7 @@ export function extractPackageFile(content: string): PackageFileContent | null {
   }
   const dep: PackageDependency = {
     // TODO: types (#22198)
-    depName: `${ownerName}/${repoName}`,
+    packageName: `${ownerName}/${repoName}`,
     managerData: { ownerName, repoName, sha256, url },
     currentValue,
     datasource: GithubTagsDatasource.id,
@@ -175,8 +175,7 @@ export function extractPackageFile(content: string): PackageFileContent | null {
   if (skipReason) {
     dep.skipReason = skipReason;
     if (skipReason === 'unsupported-url') {
-      dep.depName = className;
-      dep.datasource = undefined;
+      dep.packageName = className;
     }
   }
   const deps = [dep];

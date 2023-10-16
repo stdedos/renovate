@@ -54,7 +54,7 @@ export const MavenTarget = z
       artifacts.map(({ group, artifact, version: currentValue }) => ({
         datasource: MavenDatasource.id,
         versioning,
-        depName: `${group}:${artifact}`,
+        packageName: `${group}:${artifact}`,
         currentValue,
         depType,
         registryUrls,

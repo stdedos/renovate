@@ -6,7 +6,7 @@ import { GithubTagsDatasource } from '../../../../datasource/github-tags';
 import { NpmDatasource } from '../../../../datasource/npm';
 import * as nodeVersioning from '../../../../versioning/node';
 import { api, isValid, isVersion } from '../../../../versioning/npm';
-import type { PackageDependency } from '../../../types';
+import type { PackageDependency, PackageDependencyBase } from '../../../types';
 
 const RE_REPOSITORY_GITHUB_SSH_FORMAT = regEx(
   /(?:git@)github.com:([^/]+)\/([^/.]+)(?:\.git)?/
@@ -25,15 +25,13 @@ export function extractDependency(
   depType: string,
   depName: string,
   input: string
-): PackageDependency {
-  const dep: PackageDependency = {};
+): PackageDependency | null {
+  const dep: PackageDependencyBase = {};
   if (!validateNpmPackageName(depName).validForOldPackages) {
-    dep.skipReason = 'invalid-name';
-    return dep;
+    return null;
   }
   if (typeof input !== 'string') {
-    dep.skipReason = 'invalid-value';
-    return dep;
+    return null;
   }
   dep.currentValue = input.trim();
   if (depType === 'engines' || depType === 'packageManager') {

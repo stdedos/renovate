@@ -18,7 +18,7 @@ function createDep(
   doc: HelmsmanDocument
 ): PackageDependency | null {
   const dep: PackageDependency = {
-    depName: key,
+    packageName: key,
     datasource: HelmDatasource.id,
   };
   const anApp = doc.apps[key];

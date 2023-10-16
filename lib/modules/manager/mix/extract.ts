@@ -44,13 +44,15 @@ export async function extractPackageFile(
 
         let dep: PackageDependency;
 
-        if (git ?? github) {
+        const packageName = git ?? github;
+
+        if (packageName) {
           dep = {
             depName: app,
             currentDigest: ref,
             currentValue: branchOrTag,
             datasource: git ? GitTagsDatasource.id : GithubTagsDatasource.id,
-            packageName: git ?? github,
+            packageName,
           };
         } else {
           dep = {

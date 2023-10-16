@@ -5,11 +5,15 @@ import { regEx } from '../../../util/regex';
 import { GitTagsDatasource } from '../../datasource/git-tags';
 import { HelmDatasource } from '../../datasource/helm';
 import { checkIfStringIsPath } from '../terraform/util';
-import type { PackageDependency, PackageFileContent } from '../types';
+import type {
+  PackageDependency,
+  PackageDependencyBase,
+  PackageFileContent,
+} from '../types';
 import type { FleetFile, FleetHelmBlock, GitRepo } from './types';
 
 function extractGitRepo(doc: GitRepo): PackageDependency {
-  const dep: PackageDependency = {
+  const dep: PackageDependencyBase = {
     depType: 'git_repo',
     datasource: GitTagsDatasource.id,
   };
@@ -22,7 +26,7 @@ function extractGitRepo(doc: GitRepo): PackageDependency {
     };
   }
   dep.sourceUrl = repo;
-  dep.depName = repo;
+  dep.packageName = repo;
 
   const currentValue = doc.spec.revision;
   if (!currentValue) {
@@ -35,23 +39,18 @@ function extractGitRepo(doc: GitRepo): PackageDependency {
   return {
     ...dep,
     currentValue,
-  };
+  } as PackageDependency;
 }
 
-function extractFleetHelmBlock(doc: FleetHelmBlock): PackageDependency {
+function extractFleetHelmBlock(doc: FleetHelmBlock): PackageDependency | null {
+  if (!doc.chart) {
+    return null;
+  }
   const dep: PackageDependency = {
     depType: 'fleet',
     datasource: HelmDatasource.id,
+    packageName: doc.chart,
   };
-
-  if (!doc.chart) {
-    return {
-      ...dep,
-      skipReason: 'missing-depname',
-    };
-  }
-  dep.depName = doc.chart;
-  dep.packageName = doc.chart;
 
   if (!doc.repo) {
     if (checkIfStringIsPath(doc.chart)) {
@@ -84,7 +83,10 @@ function extractFleetHelmBlock(doc: FleetHelmBlock): PackageDependency {
 function extractFleetFile(doc: FleetFile): PackageDependency[] {
   const result: PackageDependency[] = [];
 
-  result.push(extractFleetHelmBlock(doc.helm));
+  const res = extractFleetHelmBlock(doc.helm);
+  if (res) {
+    result.push(res);
+  }
 
   if (!is.undefined(doc.targetCustomizations)) {
     // remove version from helm block to allow usage of variables defined in the global block, but do not create PRs
@@ -98,11 +100,13 @@ function extractFleetFile(doc: FleetFile): PackageDependency[] {
         ...helmBlockContext,
         ...custom.helm,
       });
-      result.push({
-        // overwrite name with customization name to allow splitting of PRs
-        ...dep,
-        depName: custom.name,
-      });
+      if (dep) {
+        result.push({
+          // overwrite name with customization name to allow splitting of PRs
+          ...dep,
+          packageName: custom.name,
+        });
+      }
     }
   }
   return result;

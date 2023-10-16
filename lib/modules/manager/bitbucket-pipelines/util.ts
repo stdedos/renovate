@@ -13,9 +13,9 @@ export function addDepAsBitbucketTag(
   deps: PackageDependency[],
   pipe: string
 ): void {
-  const [depName, currentValue] = pipe.split(':');
+  const [packageName, currentValue] = pipe.split(':');
   const dep: PackageDependency = {
-    depName,
+    packageName,
     currentValue,
     datasource: BitbucketTagsDatasource.id,
   };

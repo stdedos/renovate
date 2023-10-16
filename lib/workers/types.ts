@@ -13,6 +13,7 @@ import type {
   LookupUpdate,
   PackageDependency,
   PackageFile,
+  ValidDependency,
 } from '../modules/manager/types';
 import type { PlatformPrOptions } from '../modules/platform/types';
 import type { FileChange } from '../util/git/types';
@@ -25,7 +26,7 @@ import type {
 export type ReleaseWithNotes = Release & Partial<ChangeLogRelease>;
 
 export interface BranchUpgradeConfig
-  extends Merge<RenovateConfig, PackageDependency>,
+  extends Merge<RenovateConfig, ValidDependency>,
     Partial<LookupUpdate>,
     RenovateSharedConfig {
   artifactErrors?: ArtifactError[];

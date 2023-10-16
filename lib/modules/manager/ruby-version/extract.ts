@@ -5,7 +5,7 @@ import type { PackageDependency, PackageFileContent } from '../types';
 export function extractPackageFile(content: string): PackageFileContent {
   logger.trace('ruby-version.extractPackageFile()');
   const dep: PackageDependency = {
-    depName: 'ruby',
+    packageName: 'ruby',
     currentValue: content.trim(),
     datasource: RubyVersionDatasource.id,
   };

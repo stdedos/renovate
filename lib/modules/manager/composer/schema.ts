@@ -8,7 +8,11 @@ import { GitTagsDatasource } from '../../datasource/git-tags';
 import { GithubTagsDatasource } from '../../datasource/github-tags';
 import { PackagistDatasource } from '../../datasource/packagist';
 import { api as semverComposer } from '../../versioning/composer';
-import type { PackageDependency, PackageFileContent } from '../types';
+import type {
+  PackageDependency,
+  PackageDependencyBase,
+  PackageFileContent,
+} from '../types';
 import type { ComposerManagerData } from './types';
 
 export const ComposerRepo = z.object({
@@ -285,16 +289,16 @@ export const ComposerExtract = z
         if (pathRepos[depName]) {
           deps.push({
             depType,
-            depName,
+            packageName: depName,
             currentValue,
             skipReason: 'path-dependency',
           });
           continue;
         }
 
-        const dep: PackageDependency = {
+        const dep: PackageDependencyBase = {
           depType,
-          depName,
+          packageName: depName,
           currentValue,
         };
 
@@ -316,13 +320,13 @@ export const ComposerExtract = z
           if (bitbucketMatchGroups) {
             dep.datasource = BitbucketTagsDatasource.id;
             dep.packageName = bitbucketMatchGroups.packageName;
-            deps.push(dep);
+            deps.push(dep as PackageDependency);
             continue;
           }
 
           dep.datasource = GitTagsDatasource.id;
           dep.packageName = gitRepo.url;
-          deps.push(dep);
+          deps.push(dep as PackageDependency);
           continue;
         }
 
@@ -332,7 +336,7 @@ export const ComposerExtract = z
           dep.registryUrls = registryUrls;
         }
 
-        deps.push(dep);
+        deps.push(dep as PackageDependency);
       }
     }
 

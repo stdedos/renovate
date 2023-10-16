@@ -20,18 +20,18 @@ export function extractPackageFile(
       .filter((dep) => dep.length)
       .map((dep) => dep.split(regEx(/:(.*)/)))
       .map((arr) => {
-        const [depName, currentValue] = arr;
+        const [packageName, currentValue] = arr;
         // istanbul ignore if
-        if (!(depName && currentValue)) {
+        if (!(packageName && currentValue)) {
           logger.warn({ content }, 'Incomplete npm.depends match');
         }
         return {
-          depName,
+          packageName,
           currentValue,
           datasource: NpmDatasource.id,
         };
       })
-      .filter((dep) => dep.depName && dep.currentValue);
+      .filter((dep) => dep.packageName && dep.currentValue);
   } catch (err) /* istanbul ignore next */ {
     logger.warn({ err, packageFile }, 'Failed to parse meteor package.js');
   }

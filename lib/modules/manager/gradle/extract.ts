@@ -73,7 +73,6 @@ async function parsePackageFiles(
   for (const packageFile of packageFiles) {
     packageFilesByName[packageFile] = {
       packageFile,
-      datasource: mavenDatasource,
       deps: [],
     };
 
@@ -161,7 +160,6 @@ export async function extractAllPackageFiles(
       if (!pkgFile) {
         pkgFile = {
           packageFile: key,
-          datasource: mavenDatasource,
           deps: [],
         };
       }

@@ -87,8 +87,13 @@ function extractFromSection(
         skipReason = 'invalid-dependency-specification';
       }
     }
+
+    if (!packageName) {
+      packageName = depName;
+    }
     const dep: PackageDependency = {
       depName,
+      packageName,
       depType: section,
       currentValue: currentValue as any,
       managerData: { nestedVersion },
@@ -114,9 +119,6 @@ function extractFromSection(
     }
     if (target) {
       dep.target = target;
-    }
-    if (packageName) {
-      dep.packageName = packageName;
     }
     if (depTypeOverride) {
       dep.depType = depTypeOverride;

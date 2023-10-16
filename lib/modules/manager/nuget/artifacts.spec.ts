@@ -54,7 +54,10 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'project.csproj',
-        updatedDeps: [{ depName: 'foo' }, { depName: 'bar' }],
+        updatedDeps: [
+          { datasource: 'foo', packageName: 'foo' },
+          { datasource: 'bar', packageName: 'bar' },
+        ],
         newPackageFileContent: '{}',
         config,
       })
@@ -76,7 +79,10 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'path/with space/project.csproj',
-        updatedDeps: [{ depName: 'foo' }, { depName: 'bar' }],
+        updatedDeps: [
+          { datasource: 'foo', packageName: 'foo' },
+          { datasource: 'bar', packageName: 'bar' },
+        ],
         newPackageFileContent: '{}',
         config,
       })
@@ -108,7 +114,7 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'project.csproj',
-        updatedDeps: [{ depName: 'dep' }],
+        updatedDeps: [{ datasource: 'foo', packageName: 'dep' }],
         newPackageFileContent: '{}',
         config,
       })
@@ -148,7 +154,7 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'otherfile.props',
-        updatedDeps: [{ depName: 'dep' }],
+        updatedDeps: [{ datasource: 'foo', packageName: 'dep' }],
         newPackageFileContent: '{}',
         config,
       })
@@ -236,7 +242,7 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'project.csproj',
-        updatedDeps: [{ depName: 'dep' }],
+        updatedDeps: [{ datasource: 'foo', packageName: 'dep' }],
         newPackageFileContent: '{}',
         config: { ...config, constraints: { dotnet: '7.0.100' } },
       })
@@ -296,7 +302,7 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'project.csproj',
-        updatedDeps: [{ depName: 'dep' }],
+        updatedDeps: [{ datasource: 'foo', packageName: 'dep' }],
         newPackageFileContent: '{}',
         config: { ...config, constraints: { dotnet: '7.0.100' } },
       })
@@ -350,7 +356,7 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'project.csproj',
-        updatedDeps: [{ depName: 'dep' }],
+        updatedDeps: [{ datasource: 'foo', packageName: 'dep' }],
         newPackageFileContent: '{}',
         config,
       })
@@ -390,7 +396,7 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'project.csproj',
-        updatedDeps: [{ depName: 'dep' }],
+        updatedDeps: [{ datasource: 'foo', packageName: 'dep' }],
         newPackageFileContent: '{}',
         config,
       })
@@ -442,7 +448,7 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'project.csproj',
-        updatedDeps: [{ depName: 'dep' }],
+        updatedDeps: [{ datasource: 'foo', packageName: 'dep' }],
         newPackageFileContent: '{}',
         config,
       })
@@ -491,7 +497,7 @@ describe('modules/manager/nuget/artifacts', () => {
     expect(
       await nuget.updateArtifacts({
         packageFileName: 'project.csproj',
-        updatedDeps: [{ depName: 'dep' }],
+        updatedDeps: [{ datasource: 'foo', packageName: 'dep' }],
         newPackageFileContent: '{}',
         config,
       })

@@ -24,7 +24,7 @@ export function extractPackageFile(
   for (const match of matches) {
     const dep: PackageDependency = {
       currentValue: match.version,
-      depName: `${match.groupId}:${match.artifactId}`,
+      packageName: `${match.groupId}:${match.artifactId}`,
       replaceString: match.replaceString,
       datasource: MavenDatasource.id,
     };

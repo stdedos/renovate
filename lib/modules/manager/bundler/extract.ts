@@ -38,7 +38,7 @@ export async function extractPackageFile(
     const rubyMatch = extractRubyVersion(line);
     if (rubyMatch) {
       res.deps.push({
-        depName: 'ruby',
+        packageName: 'ruby',
         currentValue: rubyMatch,
         datasource: RubyVersionDatasource.id,
         registryUrls: null,
@@ -46,12 +46,13 @@ export async function extractPackageFile(
     }
 
     const gemMatchRegex = regEx(
-      `^\\s*gem\\s+(['"])(?<depName>[^'"]+)(['"])(\\s*,\\s*(?<currentValue>(['"])[^'"]+['"](\\s*,\\s*['"][^'"]+['"])?))?`
+      `^\\s*gem\\s+(['"])(?<packageName>[^'"]+)(['"])(\\s*,\\s*(?<currentValue>(['"])[^'"]+['"](\\s*,\\s*['"][^'"]+['"])?))?`
     );
     const gemMatch = gemMatchRegex.exec(line);
-    if (gemMatch) {
+    if (gemMatch?.groups) {
       const dep: PackageDependency = {
-        depName: gemMatch.groups?.depName,
+        datasource: RubyGemsDatasource.id,
+        packageName: gemMatch.groups.packageName,
         managerData: { lineNumber },
       };
       if (gemMatch.groups?.currentValue) {
