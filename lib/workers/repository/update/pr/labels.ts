@@ -40,16 +40,7 @@ export function areLabelsModified(
   prInitialLabels: string[],
   prCurrentLabels: string[],
 ): boolean {
-  const modified = !dequal(prInitialLabels.sort(), prCurrentLabels.sort());
-
-  if (modified) {
-    logger.debug(
-      { prInitialLabels, prCurrentLabels },
-      'PR labels have been modified by user, skipping labels update',
-    );
-  }
-
-  return modified;
+  return !dequal(prInitialLabels.sort(), prCurrentLabels.sort());
 }
 
 /**
@@ -74,10 +65,20 @@ export function shouldUpdateLabels(
 
   // If the labels in the PR have been modified by the user, they should not be updated
   if (areLabelsModified(prInitialLabels, prCurrentLabels ?? [])) {
-    logger.debug('Labels have been modified by user - skipping labels update.');
+    logger.debug(
+      {
+        lastAppliedLabels: prInitialLabels,
+        currentLabels: prCurrentLabels,
+        configuredLabels,
+      },
+      'PR labels need changing, but have been modified by another user since PR creation. Skipping labels update.',
+    );
     return false;
   }
 
-  logger.debug('Labels have been changed in repo config- updating labels.');
+  logger.debug(
+    { currentLabels: prCurrentLabels, newLabels: configuredLabels },
+    'PR labels need changing',
+  );
   return true;
 }

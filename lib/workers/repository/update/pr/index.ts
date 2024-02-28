@@ -402,15 +402,6 @@ export async function ensurePr(
       }
 
       if (labelsNeedUpdate) {
-        logger.debug(
-          {
-            branchName,
-            prCurrentLabels,
-            configuredLabels,
-          },
-          'PR labels have changed',
-        );
-
         // Divide labels into three categories:
         // i) addLabels: Labels that need to be added
         // ii) removeLabels: Labels that need to be removed
